@@ -1,117 +1,123 @@
 return {
     {
+        -- Plugin para melhorar a interface de mensagens no Neovim
         "folke/noice.nvim",
-        lazy = true,
-        enabled = true,
+        lazy = true, -- Carrega apenas quando necessário
+        enabled = true, -- Habilita o plugin
         dependencies = {
-            { "MunifTanjim/nui.nvim" },
+            { "MunifTanjim/nui.nvim" }, -- Dependência necessária
         },
-        event = "VeryLazy",
+        event = "VeryLazy", -- Carrega o plugin em eventos "preguiçosos"
         opts = {
+            -- Configurações para desabilitar mensagens desnecessárias
             messages = {
-                enabled = false,
+                enabled = false, -- Desativa exibição de mensagens padrão
             },
             notify = {
-                enabled = false,
+                enabled = false, -- Desativa notificações
             },
             lsp = {
                 progress = {
-                    enabled = false,
+                    enabled = false, -- Desativa barra de progresso do LSP
                 },
                 hover = {
-                    enabled = false,
+                    enabled = false, -- Desativa hover do LSP
                 },
                 signature = {
-                    enabled = false,
+                    enabled = false, -- Desativa assinatura do LSP
                 },
             },
         },
         keys = {
+            -- Atalhos para interagir com o Noice
             {
                 "<S-Enter>",
                 function()
                     require("noice").redirect(vim.fn.getcmdline())
                 end,
-                mode = "c",
-                desc = "Redirect Cmdline",
+                mode = "c", -- Atalho no modo de comando
+                desc = "Redirecionar Linha de Comando",
             },
             {
                 "<leader>snl",
                 function()
                     require("noice").cmd "last"
                 end,
-                desc = "Noice Last Message",
+                desc = "Última Mensagem Noice",
             },
             {
                 "<leader>snh",
                 function()
                     require("noice").cmd "history"
                 end,
-                desc = "Noice History",
+                desc = "Histórico do Noice",
             },
             {
                 "<leader>sna",
                 function()
                     require("noice").cmd "all"
                 end,
-                desc = "Noice All",
+                desc = "Todas as Mensagens do Noice",
             },
             {
                 "<c-f>",
                 function()
                     if not require("noice.lsp").scroll(4) then
-                        return "<c-f>"
+                        return "<c-f>" -- Se não puder rolar, retorna comportamento padrão
                     end
                 end,
                 silent = true,
                 expr = true,
-                desc = "Scroll forward",
-                mode = { "i", "n", "s" },
+                desc = "Rolar para frente",
+                mode = { "i", "n", "s" }, -- Disponível nos modos de inserção, normal e seleção
             },
             {
                 "<c-b>",
                 function()
                     if not require("noice.lsp").scroll(-4) then
-                        return "<c-b>"
+                        return "<c-b>" -- Se não puder rolar, retorna comportamento padrão
                     end
                 end,
                 silent = true,
                 expr = true,
-                desc = "Scroll backward",
+                desc = "Rolar para trás",
                 mode = { "i", "n", "s" },
             },
         },
     },
     {
+        -- Plugin para completar comandos no cmdline
         "hrsh7th/cmp-cmdline",
-        event = "VeryLazy",
+        event = "VeryLazy", -- Carrega de forma preguiçosa
         config = function()
             local cmp = require "cmp"
+
+            -- Mapeamentos para interagir com o cmp no cmdline
             local mapping = {
-                ["<CR>"] = cmp.mapping.confirm { select = true },
-                ["<Up>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
+                ["<CR>"] = cmp.mapping.confirm { select = true }, -- Confirmação com Enter
+                ["<Up>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }), -- Seleciona anterior
                 ["<S-Tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "c" }),
-                ["<Down>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
+                ["<Down>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }), -- Seleciona próximo
                 ["<Tab>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "c" }),
             }
 
-            -- Use buffer source for `/`.
+            -- Configuração para completar comandos iniciados com `/`
             cmp.setup.cmdline("/", {
-                preselect = "none",
+                preselect = "none", -- Não pré-seleciona itens
                 completion = {
-                    completeopt = "menu,preview,menuone,noselect",
+                    completeopt = "menu,preview,menuone,noselect", -- Opções de menu
                 },
-                mapping = mapping,
+                mapping = mapping, -- Utiliza os mapeamentos definidos
                 sources = {
-                    { name = "buffer" },
+                    { name = "buffer" }, -- Fonte: buffer atual
                 },
                 experimental = {
-                    ghost_text = true,
-                    native_menu = false,
+                    ghost_text = true, -- Exibe texto fantasma (sugestões inline)
+                    native_menu = false, -- Desativa o menu nativo
                 },
             })
 
-            -- Use cmdline & path source for ':'.
+            -- Configuração para completar comandos iniciados com `:`
             cmp.setup.cmdline(":", {
                 preselect = "none",
                 completion = {
@@ -119,9 +125,9 @@ return {
                 },
                 mapping = mapping,
                 sources = cmp.config.sources({
-                    { name = "path" },
+                    { name = "path" }, -- Fonte: caminhos
                 }, {
-                    { name = "cmdline" },
+                    { name = "cmdline" }, -- Fonte: comandos disponíveis
                 }),
                 experimental = {
                     ghost_text = true,
